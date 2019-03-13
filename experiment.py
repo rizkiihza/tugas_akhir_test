@@ -1,4 +1,7 @@
 import json 
+import redis
+
+from constant import REDIS_KEY
 
 class Experiment(object):
 
@@ -17,6 +20,23 @@ class Experiment(object):
 
         for predicate in self.predicate_set:
             result["predicates"].append(predicate)
+
+        self.add_to_redis(result)
+        
+    def add_to_redis(self, data):
+        redis_db = redis.StrictRedis(host='localhost', port=6379, db=0)
+        json_value = redis_db.get(REDIS_KEY)
+
+        if json_value is None:
+            result = []
+        else:
+            result = json.loads(json_value)
+
+        result.append(data)
+
+        json_value = json.dumps(result)
+        redis_db.set(REDIS_KEY, json_value)
+        
 
 
 

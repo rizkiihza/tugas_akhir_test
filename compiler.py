@@ -1,8 +1,13 @@
+import json
+import redis 
+
+from constant import REDIS_KEY
 
 class Compiler(object):
     @staticmethod
-    def compile():
-        data = []
+    def process_data():
+        data = Compiler.read_data_from_redis()
+        
         predicates = Compiler.list_all_predicates(data)
 
         data = Compiler.convert_predicates_to_set(data)
@@ -11,11 +16,18 @@ class Compiler(object):
         return compiled_data
 
     @staticmethod
+    def read_data_from_redis():
+        redis_db = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+        json_value = redis_db.get(REDIS_KEY)
+
+        return json.loads(json_value)
+
+    @staticmethod
     def list_all_predicates(data):
         predicate_set = set()
 
-        for key in data:
-            elem = data[key]
+        for elem in data:
             for predicate in elem["predicates"]:
                 predicate_set.add(predicate)
         
@@ -25,8 +37,7 @@ class Compiler(object):
 
     @staticmethod
     def convert_predicates_to_set(data):
-        for key in data:
-            elem = data[key]
+        for elem in data:
             elem["predicates"] = set(elem["predicates"])
 
 
@@ -38,14 +49,14 @@ class Compiler(object):
 
         compiled_data = {}
 
-        for key in data:
-            compiled_data[key] = [0 for _ in range(num_of_predicates)]
-            elem = data[key]
+        for i in range(len(data)):
+            compiled_data.append([0 for _ in range(num_of_predicates)])
+            elem = data[i]
             for predicate in elem["predicates"]:
                 predicate_id = predicate_id_dict[predicate]
-                compiled_data[key][predicate_id] = 1
+                compiled_data[i][predicate_id] = 1
 
-            compiled_data[key].append(elem["label"])
+            compiled_data[i].append(elem["label"])
 
         return compiled_data
 
