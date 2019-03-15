@@ -6,7 +6,7 @@ from constant import REDIS_KEY
 class Experiment(object):
 
     def start_experiment(self, label):
-        self.label
+        self.label = label
         self.predicate_set = set()
 
     def flag(self, predicate):

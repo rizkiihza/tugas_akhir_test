@@ -7,13 +7,13 @@ class Compiler(object):
     @staticmethod
     def process_data():
         data = Compiler.read_data_from_redis()
-        
+    
         predicates = Compiler.list_all_predicates(data)
 
         data = Compiler.convert_predicates_to_set(data)
-
-        compiled_data = Compiler.get_compiled_data(data, predicates)
-        return compiled_data
+    
+        compiled_data, predicate_id_dict = Compiler.get_compiled_data_and_predicate_dict(data, predicates)
+        return compiled_data, predicate_id_dict
 
     @staticmethod
     def read_data_from_redis():
@@ -39,10 +39,11 @@ class Compiler(object):
     def convert_predicates_to_set(data):
         for elem in data:
             elem["predicates"] = set(elem["predicates"])
+        return data
 
 
     @staticmethod
-    def get_compiled_data(data, predicates):
+    def get_compiled_data_and_predicate_dict(data, predicates):
         predicate_id_dict = Compiler.get_predicate_id_dictionary(predicates)
 
         num_of_predicates = len(predicates)
@@ -50,7 +51,7 @@ class Compiler(object):
         compiled_data = {}
 
         for i in range(len(data)):
-            compiled_data.append([0 for _ in range(num_of_predicates)])
+            compiled_data[i] = [0 for _ in range(num_of_predicates)]
             elem = data[i]
             for predicate in elem["predicates"]:
                 predicate_id = predicate_id_dict[predicate]
@@ -58,7 +59,7 @@ class Compiler(object):
 
             compiled_data[i].append(elem["label"])
 
-        return compiled_data
+        return compiled_data, predicate_id_dict
 
     @staticmethod
     def get_predicate_id_dictionary(predicates):
@@ -70,3 +71,13 @@ class Compiler(object):
             current += 1
 
         return predicate_id_dictionary
+
+if __name__ == '__main__':
+    filename = input("filename: ")
+    compiled_data, predicate_id_dict = Compiler.process_data()
+
+    for predicate in predicate_id_dict:
+            print(predicate, ":", predicate_id_dict[predicate])
+
+    for data in compiled_data:
+        print(data, ": ", compiled_data[data])
