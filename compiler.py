@@ -4,15 +4,20 @@ import redis
 from constant import REDIS_KEY
 
 class Compiler(object):
+
     @staticmethod
     def process_data():
         data = Compiler.read_data_from_redis()
-    
+
+        if data is None:
+            return None, None
+        
         predicates = Compiler.list_all_predicates(data)
 
         data = Compiler.convert_predicates_to_set(data)
     
         compiled_data, predicate_id_dict = Compiler.get_compiled_data_and_predicate_dict(data, predicates)
+
         return compiled_data, predicate_id_dict
 
     @staticmethod
@@ -21,7 +26,7 @@ class Compiler(object):
 
         json_value = redis_db.get(REDIS_KEY)
 
-        return json.loads(json_value)
+        return None if json_value is None else json.loads(json_value)
 
     @staticmethod
     def list_all_predicates(data):
@@ -31,7 +36,6 @@ class Compiler(object):
             for predicate in elem["predicates"]:
                 predicate_set.add(predicate)
         
-
         return list(predicate_set)
 
 
@@ -72,12 +76,29 @@ class Compiler(object):
 
         return predicate_id_dictionary
 
+    @staticmethod
+    def write_dictionary_to_file(dictionary, filename):
+        with open(filename, 'w') as out:
+            out.write(json.dumps(dictionary))
+
 if __name__ == '__main__':
-    filename = input("filename: ")
+    predicate_dict_filename = "output/predicate_dict.txt"
+    data_filename = "output/data.txt"
+
     compiled_data, predicate_id_dict = Compiler.process_data()
 
-    for predicate in predicate_id_dict:
-            print(predicate, ":", predicate_id_dict[predicate])
+    if compiled_data is None:
+        print("data is empty")
+        
+    else:
+        for predicate in predicate_id_dict:
+                print(predicate, ":", predicate_id_dict[predicate])
 
-    for data in compiled_data:
-        print(data, ": ", compiled_data[data])
+        for data in compiled_data:
+            print(data, ": ", compiled_data[data])
+
+        Compiler.write_dictionary_to_file(predicate_id_dict, predicate_dict_filename)
+        Compiler.write_dictionary_to_file(compiled_data, data_filename)
+
+
+    
