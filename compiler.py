@@ -81,9 +81,20 @@ class Compiler(object):
         with open(filename, 'w') as out:
             out.write(json.dumps(dictionary))
 
+    @staticmethod
+    def write_compiled_data_to_text_file(compiled_data, filename):
+        with open(filename, "w") as out:
+            for key in compiled_data:
+                data = compiled_data[key]
+                for val in data[:-1]:
+                    out.write(str(val) +",")
+                out.write(str(data[-1]) + "\n")
+
 if __name__ == '__main__':
-    predicate_dict_filename = "output/predicate_dict.txt"
-    data_filename = "output/data.txt"
+    predicate_dict_filename = "output/predicate_dict.json"
+    data_dict_filename = "output/data.json"
+    data_text_filename = "output/data.txt"
+
 
     compiled_data, predicate_id_dict = Compiler.process_data()
 
@@ -98,7 +109,8 @@ if __name__ == '__main__':
             print(data, ": ", compiled_data[data])
 
         Compiler.write_dictionary_to_file(predicate_id_dict, predicate_dict_filename)
-        Compiler.write_dictionary_to_file(compiled_data, data_filename)
+        Compiler.write_dictionary_to_file(compiled_data, data_dict_filename)
+        Compiler.write_compiled_data_to_text_file(compiled_data, data_text_filename)
 
 
     
