@@ -59,7 +59,7 @@ class Compiler(object):
             elem = data[i]
             for predicate in elem["predicates"]:
                 predicate_id = predicate_id_dict[predicate]
-                compiled_data[i][predicate_id] = 1
+                compiled_data[i][predicate_id-1] = 1
 
             compiled_data[i].append(elem["label"])
 
@@ -67,7 +67,7 @@ class Compiler(object):
 
     @staticmethod
     def get_predicate_id_dictionary(predicates):
-        current = 0
+        current = 1
         predicate_id_dictionary = {}
 
         for predicate in predicates:
