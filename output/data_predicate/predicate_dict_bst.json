@@ -1,0 +1,1 @@
+{"isEmpty: self.val is None": 1, "isEmpty: self.left is None": 2, "insert: isEmpty": 3, "insert: val < self.val and self.left is not None": 4, "insert: val >= self.val": 5, "insert: val < self.val and self.left is None": 6, "insert: val < self.val": 7, "isEmpty: self.right is None": 8, "insert: val >= self.val and self.right is None": 9}

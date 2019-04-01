@@ -1,5 +1,8 @@
 import json
 import redis 
+import sys
+
+from sys import argv
 
 from constant import REDIS_KEY
 
@@ -91,9 +94,14 @@ class Compiler(object):
                 out.write(str(data[-1]) + "\n")
 
 if __name__ == '__main__':
-    predicate_dict_filename = "output/predicate_dict.json"
-    data_dict_filename = "output/data.json"
-    data_text_filename = "output/data.txt"
+    if len(argv) < 2:
+        print("need 1 argument")
+        sys.exit()
+    filename = argv[1]
+
+    predicate_dict_filename = "output/data_predicate/predicate_dict_%s.json" % (filename)
+    data_dict_filename = "output/data_json/data_%s.json" % (filename)
+    data_text_filename = "output/data_text/data_%s.txt" % (filename)
 
 
     compiled_data, predicate_id_dict = Compiler.process_data()
