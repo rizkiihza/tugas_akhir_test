@@ -76,17 +76,13 @@ if __name__ == '__main__':
 
             label = -1
         else:
-            coin = randint(0, 1)
-            if coin == 0:
-                nums1 = None
-            else:
-                n1 = randint(5, 10)
+            n1 = randint(5, 10)
 
-                nums1 = []
+            nums1 = []
 
-                start = randint(1, 3)
-                for i in range(n1):
-                    nums1.append(start + i)
+            start = randint(100, 300)
+            for i in range(n1):
+                nums1.append(start - i)
 
         print(label)
         experiment.start_experiment(label)
