@@ -37,10 +37,15 @@ class Graph(object):
 
         for i in range(n1):
             if len(self.edges[current]) > i:
-                experiment.flag("edges[current] > %d" % i)
+                experiment.flag("edges[current] > i")
             else:
-                experiment.flag("edges[current] <= %d" % i)
+                experiment.flag("edges[current] <= i")
 
+        if len(self.edges[current]) > 2:
+            experiment.flag("edges length > 2")
+        else:
+            experiment.flag("edges length <= 2")
+            
         for neighbour in list(self.edges[current])[:2]:
             if not self.visited[neighbour]:
                 experiment.flag("not visited[neighbour]")
